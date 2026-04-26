@@ -1,594 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dealer Audit V5</title>
-  <style>
-    :root{
-      --bg:#070b12;
-      --card:#101827;
-      --card2:#162234;
-      --line:#26364f;
-      --text:#f4f7fb;
-      --muted:#a8b3c7;
-      --gold:#f5b942;
-      --green:#35d07f;
-      --red:#ff4d5f;
-      --blue:#4da3ff;
-      --orange:#ff9f43;
+<script>
+function analyzeDeal(showEmpty=true){
+  const customerName = val('customerName');
+  const dealDate = val('dealDate');
+  const vin = val('vin');
+  const amountFinanced = num('amountFinanced');
+  const bookValue = num('bookValue');
+  const term = num('term');
+  const apr = num('apr');
+  const payment = num('payment');
+  const file = document.getElementById('pdfFile').files[0];
+
+  let issues = [];
+  let warnings = [];
+  let score = 10;
+
+  // ✅ ONLY validate if field exists
+
+  if(customerName && customerName.length < 2){
+    issues.push('Customer name looks incorrect.');
+    score -= 1;
+  }
+
+  if(dealDate){
+    const today = new Date().toISOString().split('T')[0];
+    if(dealDate !== today){
+      warnings.push('Date does not match today.');
+      score -= .5;
     }
+  }
 
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top, #1b3559 0%, #070b12 42%, #04060a 100%);
-      color:var(--text);
-      min-height:100vh;
+  if(vin){
+    if(vin.length !== 17){
+      issues.push('VIN must be 17 characters.');
+      score -= 1.5;
     }
+  }
 
-    header{
-      padding:22px 16px 14px;
-      text-align:center;
-      position:sticky;
-      top:0;
-      z-index:10;
-      background:linear-gradient(180deg, rgba(7,11,18,.98), rgba(7,11,18,.82));
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--line);
+  // LTV only if BOTH values exist
+  if(amountFinanced && bookValue){
+    const ltv = amountFinanced / bookValue * 100;
+
+    if(ltv > 120){
+      issues.push('LTV extremely high: ' + pct(ltv));
+      score -= 2.5;
+    } else if(ltv > 110){
+      warnings.push('LTV high: ' + pct(ltv));
+      score -= 1;
+    } else if(ltv > 100){
+      warnings.push('LTV over 100%: ' + pct(ltv));
+      score -= .5;
     }
+  }
 
-    header h1{
-      margin:0;
-      font-size:26px;
-      letter-spacing:.5px;
+  if(term && term > 84){
+    warnings.push('Term over 84 months.');
+    score -= .5;
+  }
+
+  if(apr && apr > 24){
+    warnings.push('APR unusually high.');
+    score -= .5;
+  }
+
+  // Payment check ONLY if all exist
+  if(amountFinanced && term && apr && payment){
+    const monthlyRate = apr / 100 / 12;
+    const calcPayment = monthlyRate === 0
+      ? amountFinanced / term
+      : amountFinanced * monthlyRate / (1 - Math.pow(1 + monthlyRate, -term));
+
+    const diff = Math.abs(calcPayment - payment);
+
+    if(diff > 5){
+      warnings.push('Payment mismatch estimate.');
+      score -= .5;
     }
+  }
 
-    header p{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:13px;
-    }
+  // 🚫 REMOVE PDF requirement (optional now)
+  if(file){
+    warnings.push('PDF uploaded (OCR engine coming next).');
+  }
 
-    .wrap{
-      padding:14px;
-      max-width:980px;
-      margin:0 auto 80px;
-    }
+  score = Math.max(0, Math.min(10, score));
+  document.getElementById('scoreNum').textContent = score.toFixed(1);
 
-    .card{
-      background:linear-gradient(180deg, var(--card), #0b111d);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
-      margin-bottom:14px;
-      box-shadow:0 12px 34px rgba(0,0,0,.32);
-    }
+  let status = '';
 
-    .card h2{
-      margin:0 0 12px;
-      font-size:18px;
-    }
+  if(issues.length === 0 && warnings.length === 0){
+    status = '<span class="good">✔ Clean (based on provided fields)</span>';
+  } else if(issues.length > 0){
+    status = '<span class="bad">❌ Issues found</span>';
+  } else {
+    status = '<span class="warn">⚠ Review suggested</span>';
+  }
 
-    .grid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
-    }
-
-    @media(min-width:760px){
-      .grid.two{grid-template-columns:1fr 1fr}
-      .grid.three{grid-template-columns:1fr 1fr 1fr}
-    }
-
-    label{
-      display:block;
-      color:var(--muted);
-      font-size:12px;
-      margin:0 0 5px;
-      font-weight:bold;
-      text-transform:uppercase;
-      letter-spacing:.4px;
-    }
-
-    input, select, textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:#080d16;
-      color:var(--text);
-      border-radius:12px;
-      padding:12px;
-      font-size:15px;
-      outline:none;
-    }
-
-    textarea{min-height:88px;resize:vertical}
-
-    input:focus, select:focus, textarea:focus{
-      border-color:var(--blue);
-      box-shadow:0 0 0 3px rgba(77,163,255,.14);
-    }
-
-    .mode{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-    }
-
-    .mode button, .btn{
-      border:0;
-      border-radius:14px;
-      padding:13px 14px;
-      font-weight:800;
-      color:#07101d;
-      cursor:pointer;
-      font-size:15px;
-    }
-
-    .mode button{
-      background:#1b2a40;
-      color:var(--muted);
-      border:1px solid var(--line);
-    }
-
-    .mode button.active.sales{
-      background:linear-gradient(135deg,var(--green),#b7ffda);
-      color:#05150d;
-    }
-
-    .mode button.active.audit{
-      background:linear-gradient(135deg,var(--gold),#ffe4a0);
-      color:#181003;
-    }
-
-    .btn.primary{
-      background:linear-gradient(135deg,var(--blue),#9bd0ff);
-      width:100%;
-      margin-top:8px;
-    }
-
-    .btn.secondary{
-      background:linear-gradient(135deg,var(--gold),#ffe4a0);
-      width:100%;
-      margin-top:8px;
-    }
-
-    .upload{
-      border:1px dashed #516582;
-      border-radius:16px;
-      padding:16px;
-      background:#08101c;
-      text-align:center;
-    }
-
-    .upload input{
-      border:0;
-      background:transparent;
-      padding:8px 0 0;
-    }
-
-    .pillrow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .pill{
-      font-size:12px;
-      padding:7px 9px;
-      border-radius:999px;
-      background:#121d2c;
-      border:1px solid var(--line);
-      color:var(--muted);
-    }
-
-    .score{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
-    }
-
-    @media(min-width:760px){
-      .score{grid-template-columns:160px 1fr}
-    }
-
-    .bigscore{
-      border-radius:18px;
-      background:#09111e;
-      border:1px solid var(--line);
-      padding:18px;
-      text-align:center;
-    }
-
-    .bigscore .num{
-      font-size:42px;
-      font-weight:900;
-      color:var(--green);
-    }
-
-    .bigscore .label{
-      color:var(--muted);
-      font-size:12px;
-      text-transform:uppercase;
-    }
-
-    .result{
-      background:#08101c;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:13px;
-      margin-top:10px;
-    }
-
-    .good{color:var(--green)}
-    .bad{color:var(--red)}
-    .warn{color:var(--orange)}
-    .blue{color:var(--blue)}
-    .gold{color:var(--gold)}
-
-    .lineitem{
-      border-bottom:1px solid rgba(255,255,255,.08);
-      padding:10px 0;
-    }
-
-    .lineitem:last-child{border-bottom:0}
-
-    .small{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.45;
-    }
-
-    .hidden{display:none}
-
-    footer{
-      text-align:center;
-      color:var(--muted);
-      font-size:12px;
-      padding:20px;
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <h1>Dealer Audit V5</h1>
-    <p>Sales Mode + Audit Mode • Disclosure checker • Deal score cockpit</p>
-  </header>
-
-  <div class="wrap">
-
-    <div class="card">
-      <h2>Mode</h2>
-      <div class="mode">
-        <button id="salesBtn" class="active sales" onclick="setMode('sales')">⚡ Sales Mode</button>
-        <button id="auditBtn" onclick="setMode('audit')">🔍 Audit Mode</button>
-      </div>
-      <div class="pillrow">
-        <div class="pill">Sales = fast mismatch view</div>
-        <div class="pill">Audit = full breakdown</div>
-        <div class="pill">Private review workflow</div>
-      </div>
+  document.getElementById('summaryBox').innerHTML = `
+    ${status}
+    <div class="small" style="margin-top:8px">
+      Mode: <strong>${currentMode === 'sales' ? 'Sales Mode' : 'Audit Mode'}</strong><br>
+      Fields Used: <strong>${getUsedFields()}</strong>
     </div>
+  `;
 
-    <div class="card">
-      <h2>Truth Fields</h2>
-      <div class="grid two">
-        <div>
-          <label>Customer Name</label>
-          <input id="customerName" placeholder="Example: jo Frei">
-        </div>
-        <div>
-          <label>Co-Buyer Name</label>
-          <input id="cobuyerName" placeholder="Optional">
-        </div>
-        <div>
-          <label>Address</label>
-          <input id="address" placeholder="Street address">
-        </div>
-        <div>
-          <label>City / State / ZIP</label>
-          <input id="cityStateZip" placeholder="Grafton, WI 53024">
-        </div>
-        <div>
-          <label>Deal Date</label>
-          <input id="dealDate" type="date">
-        </div>
-        <div>
-          <label>VIN</label>
-          <input id="vin" placeholder="17 digit VIN">
-        </div>
-      </div>
-    </div>
+  let resultHtml = '';
 
-    <div class="card">
-      <h2>Deal Structure</h2>
-      <div class="grid three">
-        <div>
-          <label>Selling Price</label>
-          <input id="sellingPrice" type="number" placeholder="30000">
-        </div>
-        <div>
-          <label>Amount Financed</label>
-          <input id="amountFinanced" type="number" placeholder="26000">
-        </div>
-        <div>
-          <label>Book / MSRP Value</label>
-          <input id="bookValue" type="number" placeholder="28000">
-        </div>
-        <div>
-          <label>Term</label>
-          <input id="term" type="number" placeholder="72">
-        </div>
-        <div>
-          <label>APR</label>
-          <input id="apr" type="number" step="0.01" placeholder="7.99">
-        </div>
-        <div>
-          <label>Payment</label>
-          <input id="payment" type="number" step="0.01" placeholder="502.11">
-        </div>
-      </div>
-    </div>
+  if(issues.length){
+    resultHtml += `<div class="lineitem"><strong class="bad">Critical</strong></div>`;
+    issues.forEach(i => resultHtml += `<div class="lineitem">❌ ${i}</div>`);
+  }
 
-    <div class="card">
-      <h2>Products / Notes</h2>
-      <textarea id="products" placeholder="Example: VSC $2800, GAP $900, Maintenance $795"></textarea>
-    </div>
+  if(warnings.length){
+    resultHtml += `<div class="lineitem"><strong class="warn">Warnings</strong></div>`;
+    warnings.forEach(w => resultHtml += `<div class="lineitem">⚠️ ${w}</div>`);
+  }
 
-    <div class="card">
-      <h2>Upload Disclosure PDF</h2>
-      <div class="upload">
-        <strong>Upload PDF / scanned disclosure</strong>
-        <p class="small">This V5 captures the file locally. Full OCR correction engine comes next with backend/Python.</p>
-        <input id="pdfFile" type="file" accept="application/pdf,image/*">
-      </div>
-      <button class="btn primary" onclick="analyzeDeal()">Analyze Deal</button>
-      <button class="btn secondary" onclick="generateCorrectionPlan()">Build Correction Plan</button>
-    </div>
+  if(!issues.length && !warnings.length){
+    resultHtml = `<div class="lineitem good">✔ Nothing flagged.</div>`;
+  }
 
-    <div class="card">
-      <h2>Results</h2>
-      <div class="score">
-        <div class="bigscore">
-          <div id="scoreNum" class="num">--</div>
-          <div class="label">Deal Score</div>
-        </div>
-        <div class="result" id="summaryBox">
-          Enter deal fields and click Analyze Deal.
-        </div>
-      </div>
+  document.getElementById('resultsBox').innerHTML = resultHtml;
 
-      <div class="result" id="resultsBox"></div>
-    </div>
-
-    <div id="auditSection" class="card hidden">
-      <h2>Audit Mode Detail</h2>
-      <div class="result" id="auditBox">
-        Audit detail appears here after analysis.
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Correction Output</h2>
-      <div class="result" id="correctionBox">
-        Click “Build Correction Plan” after entering truth fields.
-      </div>
-    </div>
-
-  </div>
-
-  <footer>
-    Dealer Audit V5 • Built for fast F&I disclosure review
-  </footer>
-
-  <script>
-    let currentMode = 'sales';
-
-    const today = new Date();
-    document.getElementById('dealDate').value = today.toISOString().split('T')[0];
-
-    function money(n){
-      if(!n && n !== 0) return '';
-      return Number(n).toLocaleString('en-US', {style:'currency', currency:'USD'});
-    }
-
-    function pct(n){
-      if(!isFinite(n)) return '--';
-      return n.toFixed(2) + '%';
-    }
-
-    function val(id){
-      return document.getElementById(id).value.trim();
-    }
-
-    function num(id){
-      return Number(document.getElementById(id).value || 0);
-    }
-
-    function setMode(mode){
-      currentMode = mode;
-      document.getElementById('salesBtn').classList.toggle('active', mode === 'sales');
-      document.getElementById('salesBtn').classList.toggle('sales', mode === 'sales');
-      document.getElementById('auditBtn').classList.toggle('active', mode === 'audit');
-      document.getElementById('auditBtn').classList.toggle('audit', mode === 'audit');
-      document.getElementById('auditSection').classList.toggle('hidden', mode !== 'audit');
-      analyzeDeal(false);
-    }
-
-    function analyzeDeal(showEmpty=true){
-      const customerName = val('customerName');
-      const dealDate = val('dealDate');
-      const vin = val('vin');
-      const amountFinanced = num('amountFinanced');
-      const bookValue = num('bookValue');
-      const term = num('term');
-      const apr = num('apr');
-      const payment = num('payment');
-      const file = document.getElementById('pdfFile').files[0];
-
-      let issues = [];
-      let warnings = [];
-      let score = 10;
-
-      if(!customerName){
-        issues.push('Customer name is missing.');
-        score -= 1.5;
-      }
-
-      if(!dealDate){
-        issues.push('Deal date is missing.');
-        score -= 1;
-      }
-
-      if(vin && vin.length !== 17){
-        issues.push('VIN is not 17 characters.');
-        score -= 1.5;
-      }
-
-      if(amountFinanced > 0 && bookValue > 0){
-        const ltv = amountFinanced / bookValue * 100;
-        if(ltv > 120){
-          issues.push('LTV is extremely high: ' + pct(ltv));
-          score -= 2.5;
-        } else if(ltv > 110){
-          warnings.push('LTV is high: ' + pct(ltv));
-          score -= 1.2;
-        } else if(ltv > 100){
-          warnings.push('LTV is over 100%: ' + pct(ltv));
-          score -= .6;
-        }
-      }
-
-      if(term > 84){
-        warnings.push('Term is above 84 months.');
-        score -= .8;
-      }
-
-      if(apr > 24){
-        warnings.push('APR is very high. Double-check disclosure accuracy.');
-        score -= .8;
-      }
-
-      if(amountFinanced && term && apr && payment){
-        const monthlyRate = apr / 100 / 12;
-        const calcPayment = monthlyRate === 0
-          ? amountFinanced / term
-          : amountFinanced * monthlyRate / (1 - Math.pow(1 + monthlyRate, -term));
-        const diff = Math.abs(calcPayment - payment);
-
-        if(diff > 5){
-          warnings.push('Payment may not match simple amortization estimate. Estimated: ' + money(calcPayment) + ' / Entered: ' + money(payment));
-          score -= .7;
-        }
-      }
-
-      if(!file){
-        warnings.push('No PDF uploaded yet.');
-        score -= .3;
-      }
-
-      score = Math.max(0, Math.min(10, score));
-
-      document.getElementById('scoreNum').textContent = score.toFixed(1);
-
-      let status = '';
-      if(issues.length === 0 && warnings.length === 0){
-        status = '<span class="good">✔ No issues found from entered fields.</span>';
-      } else if(issues.length > 0){
-        status = '<span class="bad">❌ Critical items need review.</span>';
-      } else {
-        status = '<span class="warn">⚠ Review warnings before sending.</span>';
-      }
-
-      document.getElementById('summaryBox').innerHTML = `
-        ${status}
-        <div class="small" style="margin-top:8px">
-          Mode: <strong>${currentMode === 'sales' ? 'Sales Mode' : 'Audit Mode'}</strong><br>
-          File: <strong>${file ? file.name : 'No file uploaded'}</strong>
-        </div>
-      `;
-
-      let resultHtml = '';
-
-      if(issues.length){
-        resultHtml += `<div class="lineitem"><strong class="bad">Critical Fixes</strong></div>`;
-        issues.forEach(i => resultHtml += `<div class="lineitem">❌ ${i}</div>`);
-      }
-
-      if(warnings.length){
-        resultHtml += `<div class="lineitem"><strong class="warn">Warnings</strong></div>`;
-        warnings.forEach(w => resultHtml += `<div class="lineitem">⚠️ ${w}</div>`);
-      }
-
-      if(!issues.length && !warnings.length){
-        resultHtml = `<div class="lineitem good">✔ Clean based on entered fields.</div>`;
-      }
-
-      document.getElementById('resultsBox').innerHTML = resultHtml;
-
-      if(currentMode === 'audit'){
-        buildAuditBox(score, issues, warnings);
-      }
-
-      if(!showEmpty && !customerName && !file){
-        document.getElementById('resultsBox').innerHTML = '';
-      }
-    }
-
-    function buildAuditBox(score, issues, warnings){
-      const ltv = num('bookValue') > 0 ? (num('amountFinanced') / num('bookValue') * 100) : null;
-
-      document.getElementById('auditBox').innerHTML = `
-        <div class="lineitem"><strong>Customer:</strong> ${val('customerName') || 'Missing'}</div>
-        <div class="lineitem"><strong>Co-Buyer:</strong> ${val('cobuyerName') || 'None entered'}</div>
-        <div class="lineitem"><strong>Address:</strong> ${val('address') || 'Missing'} ${val('cityStateZip') || ''}</div>
-        <div class="lineitem"><strong>VIN:</strong> ${val('vin') || 'Missing'}</div>
-        <div class="lineitem"><strong>Date:</strong> ${val('dealDate') || 'Missing'}</div>
-        <div class="lineitem"><strong>Amount Financed:</strong> ${money(num('amountFinanced'))}</div>
-        <div class="lineitem"><strong>Book/MSRP:</strong> ${money(num('bookValue'))}</div>
-        <div class="lineitem"><strong>LTV:</strong> ${ltv ? pct(ltv) : '--'}</div>
-        <div class="lineitem"><strong>Term/APR/Payment:</strong> ${num('term') || '--'} mo / ${num('apr') || '--'}% / ${money(num('payment')) || '--'}</div>
-        <div class="lineitem"><strong>Issue Count:</strong> ${issues.length} critical / ${warnings.length} warnings</div>
-        <div class="lineitem"><strong>Risk Level:</strong> ${score >= 8 ? '<span class="good">Low</span>' : score >= 6 ? '<span class="warn">Medium</span>' : '<span class="bad">High</span>'}</div>
-      `;
-    }
-
-    function generateCorrectionPlan(){
-      const customerName = val('customerName') || '[customer name missing]';
-      const cobuyerName = val('cobuyerName');
-      const address = val('address');
-      const cityStateZip = val('cityStateZip');
-      const dealDate = val('dealDate');
-      const vin = val('vin');
-      const amountFinanced = num('amountFinanced');
-      const payment = num('payment');
-      const file = document.getElementById('pdfFile').files[0];
-
-      const plan = [];
-
-      plan.push(`Replace customer name everywhere with: <strong>${customerName}</strong>`);
-      if(cobuyerName) plan.push(`Verify co-buyer name everywhere: <strong>${cobuyerName}</strong>`);
-      if(address || cityStateZip) plan.push(`Replace address with: <strong>${address} ${cityStateZip}</strong>`);
-      if(dealDate) plan.push(`Set all document dates to: <strong>${dealDate}</strong>`);
-      if(vin) plan.push(`Verify VIN exactly: <strong>${vin}</strong>`);
-      if(amountFinanced) plan.push(`Verify amount financed: <strong>${money(amountFinanced)}</strong>`);
-      if(payment) plan.push(`Verify payment: <strong>${money(payment)}</strong>`);
-
-      document.getElementById('correctionBox').innerHTML = `
-        <div class="lineitem"><strong class="blue">Correction Plan</strong></div>
-        <div class="lineitem small">PDF loaded: <strong>${file ? file.name : 'No PDF uploaded yet'}</strong></div>
-        ${plan.map(p => `<div class="lineitem">🛠 ${p}</div>`).join('')}
-        <div class="lineitem">
-          <strong class="gold">Next engine step:</strong>
-          connect this app to a private OCR/PDF backend that reads the uploaded PDF, finds mismatches, places clean overlays, and exports the corrected PDF.
-        </div>
-      `;
-    }
-  </script>
-</body>
-</html>
+  if(currentMode === 'audit'){
+    buildAuditBox(score, issues, warnings);
+  }
+}
