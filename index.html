@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dealer Audit V6</title>
+<title>Dealer Audit V7</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
 <style>
 :root{
-  --bg:#05070c;--card:rgba(15,24,39,.86);--card2:rgba(22,34,54,.94);
+  --bg:#05070c;--card:rgba(15,24,39,.88);--card2:rgba(22,34,54,.96);
   --line:rgba(255,255,255,.12);--text:#f6f8fc;--muted:#9eacc3;
   --gold:#f6bd4b;--blue:#4da3ff;--green:#3be28b;--red:#ff5368;--orange:#ff9f43;
 }
@@ -26,13 +27,17 @@ header{
 }
 .badge{display:inline-block;padding:7px 12px;border:1px solid rgba(246,189,75,.35);border-radius:999px;color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.8px;background:rgba(246,189,75,.08)}
 h1{margin:10px 0 4px;font-size:30px}.sub{margin:0;color:var(--muted);font-size:13px}
-.wrap{max-width:1000px;margin:0 auto;padding:14px 14px 90px}
+.wrap{max-width:1080px;margin:0 auto;padding:14px 14px 90px}
 .card{border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;background:linear-gradient(180deg,var(--card2),var(--card));box-shadow:0 18px 44px rgba(0,0,0,.38);backdrop-filter:blur(18px)}
 .card h2{margin:0 0 12px;font-size:18px}.grid{display:grid;grid-template-columns:1fr;gap:11px}
 @media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:1fr 1fr 1fr}.scoreBox{grid-template-columns:170px 1fr}}
 label{display:block;margin-bottom:6px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.65px;text-transform:uppercase}
-input,textarea{width:100%;padding:14px;border-radius:15px;border:1px solid rgba(255,255,255,.13);background:rgba(3,7,13,.72);color:var(--text);font-size:15px;outline:none}
-input::placeholder,textarea::placeholder{color:#68758a}input:focus,textarea:focus{border-color:rgba(77,163,255,.85);box-shadow:0 0 0 4px rgba(77,163,255,.12)}
+input,textarea,select{
+  width:100%;padding:14px;border-radius:15px;border:1px solid rgba(255,255,255,.13);
+  background:rgba(3,7,13,.72);color:var(--text);font-size:15px;outline:none
+}
+input::placeholder,textarea::placeholder{color:#68758a}
+input:focus,textarea:focus,select:focus{border-color:rgba(77,163,255,.85);box-shadow:0 0 0 4px rgba(77,163,255,.12)}
 textarea{min-height:96px;resize:vertical}
 .mode{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button{border:none;border-radius:16px;padding:14px;font-size:15px;font-weight:900;cursor:pointer}
@@ -41,6 +46,7 @@ button{border:none;border-radius:16px;padding:14px;font-size:15px;font-weight:90
 .mode button.active.audit{color:#171003;background:linear-gradient(135deg,var(--gold),#ffe5a3)}
 .btn-blue{color:#03101d;background:linear-gradient(135deg,var(--blue),#a9d8ff);width:100%;margin-top:10px}
 .btn-gold{color:#1b1204;background:linear-gradient(135deg,var(--gold),#ffe5a3);width:100%;margin-top:10px}
+.btn-red{color:#fff;background:linear-gradient(135deg,var(--red),#ff9aa7);width:100%;margin-top:10px}
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.pill{padding:8px 10px;border-radius:999px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.06);border:1px solid var(--line)}
 .upload{padding:16px;border:1px dashed rgba(77,163,255,.45);border-radius:18px;background:rgba(77,163,255,.07)}
 .scoreBox{display:grid;grid-template-columns:1fr;gap:12px}.scoreDial{border-radius:22px;padding:20px;text-align:center;background:rgba(0,0,0,.28);border:1px solid var(--line)}
@@ -49,15 +55,16 @@ button{border:none;border-radius:16px;padding:14px;font-size:15px;font-weight:90
 .line{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}.line:last-child{border-bottom:none}
 .good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--orange)}.gold{color:var(--gold)}.blue{color:var(--blue)}
 .small{font-size:12px;color:var(--muted);line-height:1.45}.hidden{display:none}
+.correctionRow{border:1px solid var(--line);border-radius:18px;padding:12px;margin:10px 0;background:rgba(255,255,255,.04)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 </style>
 </head>
 
 <body>
 <header>
-  <div class="badge">V6 PDF Auto-Scan</div>
-  <h1>Dealer Audit V6</h1>
-  <p class="sub">Optional fields • PDF text extraction • mismatch detection • correction planner</p>
+  <div class="badge">V7 Correction Export</div>
+  <h1>Dealer Audit V7</h1>
+  <p class="sub">Optional fields • PDF scan • mismatch detection • manual overlay export</p>
 </header>
 
 <div class="wrap">
@@ -70,8 +77,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
   </div>
   <div class="pills">
     <div class="pill">Blank = ignored</div>
-    <div class="pill">PDF text scan</div>
-    <div class="pill">iPhone ready</div>
+    <div class="pill">PDF readable scan</div>
+    <div class="pill">Export corrected PDF</div>
   </div>
 </div>
 
@@ -108,12 +115,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
   <h2>Upload Disclosure</h2>
   <div class="upload">
     <strong>PDF Upload</strong>
-    <p class="small">Optional. V6 reads normal PDF text. Scanned image-only PDFs will be flagged for OCR/backend.</p>
+    <p class="small">V7 can read normal PDF text and export overlay corrections. Scanned image-only PDFs still need OCR/backend.</p>
     <input id="pdfFile" type="file" accept="application/pdf">
   </div>
   <button class="btn-blue" onclick="scanPdf()">1. Scan PDF</button>
   <button class="btn-blue" onclick="analyzeDeal()">2. Analyze Deal</button>
-  <button class="btn-gold" onclick="generatePlan()">Build Correction Plan</button>
+  <button class="btn-gold" onclick="generatePlan()">3. Build Correction Rows</button>
 </div>
 
 <div class="card">
@@ -139,13 +146,22 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 </div>
 
 <div class="card">
-  <h2>Correction Plan</h2>
-  <div id="correctionBox" class="output">Click “Build Correction Plan” after entering the fields you want corrected.</div>
+  <h2>Correction Overlay Builder</h2>
+  <p class="small">
+    Add or edit correction rows. X/Y are manual placement points on the PDF page.
+    Start with X=70 and Y=700, export, then adjust if needed.
+  </p>
+
+  <div id="correctionRows"></div>
+
+  <button class="btn-blue" onclick="addCorrectionRow()">+ Add Manual Correction Row</button>
+  <button class="btn-gold" onclick="exportCorrectedPdf()">Export Corrected PDF</button>
+  <button class="btn-red" onclick="clearCorrections()">Clear Correction Rows</button>
 </div>
 
 </div>
 
-<footer>Dealer Audit V6</footer>
+<footer>Dealer Audit V7</footer>
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -154,6 +170,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 let currentMode = "sales";
 let pdfText = "";
 let pdfPages = [];
+let originalPdfBytes = null;
+let correctionCount = 0;
 
 function val(id){ return document.getElementById(id).value.trim(); }
 function num(id){
@@ -166,6 +184,11 @@ function money(n){
   return Number(n).toLocaleString("en-US",{style:"currency",currency:"USD"});
 }
 function pct(n){ return isFinite(n) ? n.toFixed(2) + "%" : "N/A"; }
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
 
 function activeFields(){
   const fields = ["customerName","cobuyerName","address","cityStateZip","dealDate","vin","sellingPrice","amountFinanced","bookValue","term","apr","payment","products"];
@@ -191,8 +214,8 @@ async function scanPdf(){
   document.getElementById("pdfTextBox").innerHTML = `<span class="blue">Scanning PDF...</span>`;
 
   try{
-    const buffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
+    originalPdfBytes = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data: originalPdfBytes.slice(0)}).promise;
 
     pdfText = "";
     pdfPages = [];
@@ -209,7 +232,7 @@ async function scanPdf(){
 
     if(clean(pdfText).length < 50){
       document.getElementById("pdfTextBox").innerHTML =
-        `<span class="warn">PDF loaded, but almost no readable text was found. This is probably scanned/image-only and needs OCR backend.</span>`;
+        `<span class="warn">PDF loaded, but almost no readable text was found. This is probably scanned/image-only and needs OCR/backend.</span>`;
     } else {
       document.getElementById("pdfTextBox").innerHTML =
         `<span class="good">PDF scanned successfully.</span><br><br>${escapeHtml(preview)}${pdfText.length > 1800 ? "..." : ""}`;
@@ -221,19 +244,15 @@ async function scanPdf(){
   }
 }
 
-function findInPdf(label, value){
+function findInPdf(value){
   if(!value || !pdfText) return null;
-
   const target = clean(value);
   const all = clean(pdfText);
 
   if(all.includes(target)){
-    let pages = pdfPages
-      .filter(p => clean(p.text).includes(target))
-      .map(p => p.page);
+    let pages = pdfPages.filter(p => clean(p.text).includes(target)).map(p => p.page);
     return {found:true, pages:pages};
   }
-
   return {found:false, pages:[]};
 }
 
@@ -301,7 +320,7 @@ function analyzeDeal(){
     } else {
       fieldsToCheck.forEach(([label,value]) => {
         if(value){
-          const result = findInPdf(label,value);
+          const result = findInPdf(value);
           if(result && result.found){
             matches.push(`${label} found on page(s): ${result.pages.join(", ")}`);
           } else {
@@ -371,31 +390,121 @@ function buildAudit(matches){
 }
 
 function generatePlan(){
-  const items = [];
-  if(val("customerName")) items.push("Replace customer name with: <strong>" + escapeHtml(val("customerName")) + "</strong>");
-  if(val("cobuyerName")) items.push("Verify co-buyer name: <strong>" + escapeHtml(val("cobuyerName")) + "</strong>");
-  if(val("address") || val("cityStateZip")) items.push("Replace address with: <strong>" + escapeHtml((val("address") + " " + val("cityStateZip")).trim()) + "</strong>");
-  if(val("dealDate")) items.push("Set document dates to: <strong>" + escapeHtml(val("dealDate")) + "</strong>");
-  if(val("vin")) items.push("Verify VIN: <strong>" + escapeHtml(val("vin")) + "</strong>");
-  if(val("amountFinanced")) items.push("Verify amount financed: <strong>" + money(num("amountFinanced")) + "</strong>");
-  if(val("payment")) items.push("Verify payment: <strong>" + money(num("payment")) + "</strong>");
-  if(val("products")) items.push("Verify products/notes: <strong>" + escapeHtml(val("products")) + "</strong>");
+  clearCorrections();
 
-  if(!items.length){
-    document.getElementById("correctionBox").innerHTML =
-      `<span class="warn">No correction fields entered. Everything is optional by default.</span>`;
+  if(val("customerName")) addCorrectionRow("Customer Name", val("customerName"), 1, 70, 700, 11);
+  if(val("cobuyerName")) addCorrectionRow("Co-Buyer Name", val("cobuyerName"), 1, 70, 675, 11);
+  if(val("address")) addCorrectionRow("Address", val("address"), 1, 70, 650, 11);
+  if(val("cityStateZip")) addCorrectionRow("City/State/ZIP", val("cityStateZip"), 1, 70, 625, 11);
+  if(val("dealDate")) addCorrectionRow("Deal Date", val("dealDate"), 1, 70, 600, 11);
+  if(val("vin")) addCorrectionRow("VIN", val("vin"), 1, 70, 575, 11);
+  if(val("amountFinanced")) addCorrectionRow("Amount Financed", money(num("amountFinanced")), 1, 70, 550, 11);
+  if(val("payment")) addCorrectionRow("Payment", money(num("payment")), 1, 70, 525, 11);
+  if(val("products")) addCorrectionRow("Products/Notes", val("products"), 1, 70, 500, 9);
+
+  if(correctionCount === 0){
+    document.getElementById("correctionRows").innerHTML =
+      `<div class="output warn">No correction fields entered. Everything is optional by default.</div>`;
+  }
+}
+
+function addCorrectionRow(label="", text="", page=1, x=70, y=700, size=11){
+  correctionCount++;
+  const id = correctionCount;
+
+  const row = document.createElement("div");
+  row.className = "correctionRow";
+  row.id = "correctionRow" + id;
+  row.innerHTML = `
+    <div class="grid two">
+      <div><label>Field Label</label><input id="corrLabel${id}" value="${escapeAttr(label)}" placeholder="Optional"></div>
+      <div><label>Replacement Text</label><input id="corrText${id}" value="${escapeAttr(text)}" placeholder="Optional"></div>
+      <div><label>Page</label><input id="corrPage${id}" type="number" value="${page}" min="1"></div>
+      <div><label>Font Size</label><input id="corrSize${id}" type="number" value="${size}" min="6" max="32"></div>
+      <div><label>X Position</label><input id="corrX${id}" type="number" value="${x}"></div>
+      <div><label>Y Position</label><input id="corrY${id}" type="number" value="${y}"></div>
+    </div>
+    <button class="btn-red" onclick="removeCorrectionRow(${id})">Remove Row</button>
+  `;
+  const container = document.getElementById("correctionRows");
+  if(container.innerHTML.includes("No correction fields entered")) container.innerHTML = "";
+  container.appendChild(row);
+}
+
+function removeCorrectionRow(id){
+  const el = document.getElementById("correctionRow" + id);
+  if(el) el.remove();
+}
+
+function clearCorrections(){
+  document.getElementById("correctionRows").innerHTML = "";
+  correctionCount = 0;
+}
+
+function escapeAttr(str){
+  return String(str || "").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+async function exportCorrectedPdf(){
+  if(!originalPdfBytes){
+    alert("Upload and scan a PDF first.");
     return;
   }
 
-  document.getElementById("correctionBox").innerHTML =
-    items.map(i => `<div class="line">🛠 ${i}</div>`).join("") +
-    `<div class="line small gold">V6 can detect mismatches in readable PDFs. V7 is the correction/export engine.</div>`;
-}
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const pdfDoc = await PDFDocument.load(originalPdfBytes.slice(0));
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const pages = pdfDoc.getPages();
 
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, m => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
+  const rows = document.querySelectorAll(".correctionRow");
+
+  if(rows.length === 0){
+    alert("Add at least one correction row first.");
+    return;
+  }
+
+  rows.forEach(row => {
+    const id = row.id.replace("correctionRow","");
+    const text = document.getElementById("corrText" + id).value.trim();
+    const pageNum = Number(document.getElementById("corrPage" + id).value || 1);
+    const x = Number(document.getElementById("corrX" + id).value || 70);
+    const y = Number(document.getElementById("corrY" + id).value || 700);
+    const size = Number(document.getElementById("corrSize" + id).value || 11);
+
+    if(!text) return;
+    const page = pages[pageNum - 1];
+    if(!page) return;
+
+    page.drawRectangle({
+      x: x - 2,
+      y: y - 3,
+      width: Math.max(90, text.length * size * 0.58),
+      height: size + 8,
+      color: rgb(1,1,1),
+      opacity: 1
+    });
+
+    page.drawText(text, {
+      x: x,
+      y: y,
+      size: size,
+      font: font,
+      color: rgb(0,0,0)
+    });
+  });
+
+  const correctedBytes = await pdfDoc.save();
+  const blob = new Blob([correctedBytes], {type:"application/pdf"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "corrected-disclosure-v7.pdf";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 </script>
 
