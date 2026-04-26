@@ -1,388 +1,174 @@
-<!-- Paste this entire file into GitHub > index.html > Edit > replace all > Commit changes -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dealer Audit V5 Elite</title>
+<title>Dealer Audit V6</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
 :root{
-  --bg:#05070c;
-  --card:rgba(15,24,39,.82);
-  --card2:rgba(22,34,54,.92);
-  --line:rgba(255,255,255,.12);
-  --text:#f6f8fc;
-  --muted:#9eacc3;
-  --gold:#f6bd4b;
-  --blue:#4da3ff;
-  --green:#3be28b;
-  --red:#ff5368;
-  --orange:#ff9f43;
+  --bg:#05070c;--card:rgba(15,24,39,.86);--card2:rgba(22,34,54,.94);
+  --line:rgba(255,255,255,.12);--text:#f6f8fc;--muted:#9eacc3;
+  --gold:#f6bd4b;--blue:#4da3ff;--green:#3be28b;--red:#ff5368;--orange:#ff9f43;
 }
-
 *{box-sizing:border-box}
-
 body{
-  margin:0;
-  min-height:100vh;
-  font-family:Arial, Helvetica, sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(circle at top left, rgba(77,163,255,.24), transparent 35%),
-    radial-gradient(circle at top right, rgba(246,189,75,.18), transparent 32%),
-    linear-gradient(180deg,#060a12,#030509);
+  margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:var(--text);
+  background:radial-gradient(circle at top left,rgba(77,163,255,.24),transparent 35%),
+  radial-gradient(circle at top right,rgba(246,189,75,.18),transparent 32%),
+  linear-gradient(180deg,#060a12,#030509);
 }
-
 header{
-  padding:24px 16px 18px;
-  text-align:center;
-  border-bottom:1px solid var(--line);
-  background:rgba(3,5,9,.72);
-  backdrop-filter:blur(16px);
-  position:sticky;
-  top:0;
-  z-index:20;
+  padding:24px 16px 18px;text-align:center;border-bottom:1px solid var(--line);
+  background:rgba(3,5,9,.76);backdrop-filter:blur(16px);position:sticky;top:0;z-index:20;
 }
-
-.badge{
-  display:inline-block;
-  padding:7px 12px;
-  border:1px solid rgba(246,189,75,.35);
-  border-radius:999px;
-  color:var(--gold);
-  font-size:12px;
-  font-weight:800;
-  letter-spacing:.8px;
-  text-transform:uppercase;
-  background:rgba(246,189,75,.08);
-}
-
-h1{
-  margin:10px 0 4px;
-  font-size:30px;
-  letter-spacing:.3px;
-}
-
-.sub{
-  margin:0;
-  color:var(--muted);
-  font-size:13px;
-}
-
-.wrap{
-  max-width:980px;
-  margin:0 auto;
-  padding:14px;
-  padding-bottom:80px;
-}
-
-.card{
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:16px;
-  margin:14px 0;
-  background:linear-gradient(180deg,var(--card2),var(--card));
-  box-shadow:0 18px 44px rgba(0,0,0,.38);
-  backdrop-filter:blur(18px);
-}
-
-.card h2{
-  margin:0 0 12px;
-  font-size:18px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:11px;
-}
-
-@media(min-width:760px){
-  .grid.two{grid-template-columns:1fr 1fr}
-  .grid.three{grid-template-columns:1fr 1fr 1fr}
-}
-
-label{
-  display:block;
-  margin-bottom:6px;
-  color:var(--muted);
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.65px;
-  text-transform:uppercase;
-}
-
-input, textarea{
-  width:100%;
-  padding:14px;
-  border-radius:15px;
-  border:1px solid rgba(255,255,255,.13);
-  background:rgba(3,7,13,.72);
-  color:var(--text);
-  font-size:15px;
-  outline:none;
-}
-
-input::placeholder, textarea::placeholder{color:#68758a}
-
-input:focus, textarea:focus{
-  border-color:rgba(77,163,255,.85);
-  box-shadow:0 0 0 4px rgba(77,163,255,.12);
-}
-
+.badge{display:inline-block;padding:7px 12px;border:1px solid rgba(246,189,75,.35);border-radius:999px;color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.8px;background:rgba(246,189,75,.08)}
+h1{margin:10px 0 4px;font-size:30px}.sub{margin:0;color:var(--muted);font-size:13px}
+.wrap{max-width:1000px;margin:0 auto;padding:14px 14px 90px}
+.card{border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;background:linear-gradient(180deg,var(--card2),var(--card));box-shadow:0 18px 44px rgba(0,0,0,.38);backdrop-filter:blur(18px)}
+.card h2{margin:0 0 12px;font-size:18px}.grid{display:grid;grid-template-columns:1fr;gap:11px}
+@media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:1fr 1fr 1fr}.scoreBox{grid-template-columns:170px 1fr}}
+label{display:block;margin-bottom:6px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.65px;text-transform:uppercase}
+input,textarea{width:100%;padding:14px;border-radius:15px;border:1px solid rgba(255,255,255,.13);background:rgba(3,7,13,.72);color:var(--text);font-size:15px;outline:none}
+input::placeholder,textarea::placeholder{color:#68758a}input:focus,textarea:focus{border-color:rgba(77,163,255,.85);box-shadow:0 0 0 4px rgba(77,163,255,.12)}
 textarea{min-height:96px;resize:vertical}
-
-.mode{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-button{
-  border:none;
-  border-radius:16px;
-  padding:14px;
-  font-size:15px;
-  font-weight:900;
-  cursor:pointer;
-}
-
-.mode button{
-  color:var(--muted);
-  background:rgba(255,255,255,.07);
-  border:1px solid var(--line);
-}
-
-.mode button.active.sales{
-  color:#03150b;
-  background:linear-gradient(135deg,var(--green),#c8ffe3);
-}
-
-.mode button.active.audit{
-  color:#171003;
-  background:linear-gradient(135deg,var(--gold),#ffe5a3);
-}
-
-.btn-blue{
-  color:#03101d;
-  background:linear-gradient(135deg,var(--blue),#a9d8ff);
-  width:100%;
-  margin-top:10px;
-}
-
-.btn-gold{
-  color:#1b1204;
-  background:linear-gradient(135deg,var(--gold),#ffe5a3);
-  width:100%;
-  margin-top:10px;
-}
-
-.pills{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:12px;
-}
-
-.pill{
-  padding:8px 10px;
-  border-radius:999px;
-  font-size:12px;
-  color:var(--muted);
-  background:rgba(255,255,255,.06);
-  border:1px solid var(--line);
-}
-
-.upload{
-  padding:16px;
-  border:1px dashed rgba(77,163,255,.45);
-  border-radius:18px;
-  background:rgba(77,163,255,.07);
-}
-
-.scoreBox{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:12px;
-}
-
-@media(min-width:760px){
-  .scoreBox{grid-template-columns:170px 1fr}
-}
-
-.scoreDial{
-  border-radius:22px;
-  padding:20px;
-  text-align:center;
-  background:rgba(0,0,0,.28);
-  border:1px solid var(--line);
-}
-
-.scoreDial .num{
-  font-size:46px;
-  font-weight:950;
-  color:var(--green);
-}
-
-.scoreDial .txt{
-  color:var(--muted);
-  font-size:12px;
-  font-weight:800;
-  text-transform:uppercase;
-}
-
-.output{
-  padding:14px;
-  border-radius:18px;
-  background:rgba(0,0,0,.25);
-  border:1px solid var(--line);
-  min-height:64px;
-}
-
-.line{
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-
-.line:last-child{border-bottom:none}
-
-.good{color:var(--green)}
-.bad{color:var(--red)}
-.warn{color:var(--orange)}
-.gold{color:var(--gold)}
-.blue{color:var(--blue)}
-.small{font-size:12px;color:var(--muted);line-height:1.45}
-.hidden{display:none}
-
-footer{
-  text-align:center;
-  color:var(--muted);
-  font-size:12px;
-  padding:20px;
-}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:none;border-radius:16px;padding:14px;font-size:15px;font-weight:900;cursor:pointer}
+.mode button{color:var(--muted);background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.mode button.active.sales{color:#03150b;background:linear-gradient(135deg,var(--green),#c8ffe3)}
+.mode button.active.audit{color:#171003;background:linear-gradient(135deg,var(--gold),#ffe5a3)}
+.btn-blue{color:#03101d;background:linear-gradient(135deg,var(--blue),#a9d8ff);width:100%;margin-top:10px}
+.btn-gold{color:#1b1204;background:linear-gradient(135deg,var(--gold),#ffe5a3);width:100%;margin-top:10px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.pill{padding:8px 10px;border-radius:999px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.upload{padding:16px;border:1px dashed rgba(77,163,255,.45);border-radius:18px;background:rgba(77,163,255,.07)}
+.scoreBox{display:grid;grid-template-columns:1fr;gap:12px}.scoreDial{border-radius:22px;padding:20px;text-align:center;background:rgba(0,0,0,.28);border:1px solid var(--line)}
+.scoreDial .num{font-size:46px;font-weight:950;color:var(--green)}.scoreDial .txt{color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase}
+.output{padding:14px;border-radius:18px;background:rgba(0,0,0,.25);border:1px solid var(--line);min-height:64px;overflow-wrap:anywhere}
+.line{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}.line:last-child{border-bottom:none}
+.good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--orange)}.gold{color:var(--gold)}.blue{color:var(--blue)}
+.small{font-size:12px;color:var(--muted);line-height:1.45}.hidden{display:none}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 </style>
 </head>
 
 <body>
-
 <header>
-  <div class="badge">F&I Disclosure Cockpit</div>
-  <h1>Dealer Audit V5 Elite</h1>
-  <p class="sub">Optional fields • Sales Mode • Audit Mode • Correction planner</p>
+  <div class="badge">V6 PDF Auto-Scan</div>
+  <h1>Dealer Audit V6</h1>
+  <p class="sub">Optional fields • PDF text extraction • mismatch detection • correction planner</p>
 </header>
 
 <div class="wrap">
 
-  <div class="card">
-    <h2>Control Mode</h2>
-    <div class="mode">
-      <button id="salesBtn" class="active sales" onclick="setMode('sales')">⚡ Sales Mode</button>
-      <button id="auditBtn" onclick="setMode('audit')">🔍 Audit Mode</button>
-    </div>
-    <div class="pills">
-      <div class="pill">Blank = ignored</div>
-      <div class="pill">Optional by default</div>
-      <div class="pill">Built for iPhone</div>
-    </div>
+<div class="card">
+  <h2>Control Mode</h2>
+  <div class="mode">
+    <button id="salesBtn" class="active sales" onclick="setMode('sales')">⚡ Sales Mode</button>
+    <button id="auditBtn" onclick="setMode('audit')">🔍 Audit Mode</button>
   </div>
+  <div class="pills">
+    <div class="pill">Blank = ignored</div>
+    <div class="pill">PDF text scan</div>
+    <div class="pill">iPhone ready</div>
+  </div>
+</div>
 
-  <div class="card">
-    <h2>Customer Truth Fields</h2>
-    <div class="grid two">
-      <div><label>Customer Name</label><input id="customerName" placeholder="Optional"></div>
-      <div><label>Co-Buyer Name</label><input id="cobuyerName" placeholder="Optional"></div>
-      <div><label>Address</label><input id="address" placeholder="Optional"></div>
-      <div><label>City / State / ZIP</label><input id="cityStateZip" placeholder="Optional"></div>
-      <div><label>Deal Date</label><input id="dealDate" type="date"></div>
-      <div><label>VIN</label><input id="vin" placeholder="Optional"></div>
+<div class="card">
+  <h2>Truth Fields</h2>
+  <div class="grid two">
+    <div><label>Customer Name</label><input id="customerName" placeholder="Optional"></div>
+    <div><label>Co-Buyer Name</label><input id="cobuyerName" placeholder="Optional"></div>
+    <div><label>Address</label><input id="address" placeholder="Optional"></div>
+    <div><label>City / State / ZIP</label><input id="cityStateZip" placeholder="Optional"></div>
+    <div><label>Deal Date</label><input id="dealDate" type="date"></div>
+    <div><label>VIN</label><input id="vin" placeholder="Optional"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Deal Structure</h2>
+  <div class="grid three">
+    <div><label>Selling Price</label><input id="sellingPrice" type="number" placeholder="Optional"></div>
+    <div><label>Amount Financed</label><input id="amountFinanced" type="number" placeholder="Optional"></div>
+    <div><label>Book / MSRP Value</label><input id="bookValue" type="number" placeholder="Optional"></div>
+    <div><label>Term</label><input id="term" type="number" placeholder="Optional"></div>
+    <div><label>APR</label><input id="apr" type="number" step="0.01" placeholder="Optional"></div>
+    <div><label>Payment</label><input id="payment" type="number" step="0.01" placeholder="Optional"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Products / Notes</h2>
+  <textarea id="products" placeholder="Optional"></textarea>
+</div>
+
+<div class="card">
+  <h2>Upload Disclosure</h2>
+  <div class="upload">
+    <strong>PDF Upload</strong>
+    <p class="small">Optional. V6 reads normal PDF text. Scanned image-only PDFs will be flagged for OCR/backend.</p>
+    <input id="pdfFile" type="file" accept="application/pdf">
+  </div>
+  <button class="btn-blue" onclick="scanPdf()">1. Scan PDF</button>
+  <button class="btn-blue" onclick="analyzeDeal()">2. Analyze Deal</button>
+  <button class="btn-gold" onclick="generatePlan()">Build Correction Plan</button>
+</div>
+
+<div class="card">
+  <h2>Results</h2>
+  <div class="scoreBox">
+    <div class="scoreDial">
+      <div id="scoreNum" class="num">--</div>
+      <div class="txt">Deal Score</div>
     </div>
+    <div id="summaryBox" class="output">Upload a PDF or enter only the fields you want checked.</div>
   </div>
+  <div id="resultsBox" class="output" style="margin-top:12px;"></div>
+</div>
 
-  <div class="card">
-    <h2>Deal Structure</h2>
-    <div class="grid three">
-      <div><label>Selling Price</label><input id="sellingPrice" type="number" placeholder="Optional"></div>
-      <div><label>Amount Financed</label><input id="amountFinanced" type="number" placeholder="Optional"></div>
-      <div><label>Book / MSRP Value</label><input id="bookValue" type="number" placeholder="Optional"></div>
-      <div><label>Term</label><input id="term" type="number" placeholder="Optional"></div>
-      <div><label>APR</label><input id="apr" type="number" step="0.01" placeholder="Optional"></div>
-      <div><label>Payment</label><input id="payment" type="number" step="0.01" placeholder="Optional"></div>
-    </div>
-  </div>
+<div id="auditSection" class="card hidden">
+  <h2>Audit Detail</h2>
+  <div id="auditBox" class="output"></div>
+</div>
 
-  <div class="card">
-    <h2>Products / Notes</h2>
-    <textarea id="products" placeholder="Optional"></textarea>
-  </div>
+<div class="card">
+  <h2>PDF Text Found</h2>
+  <div id="pdfTextBox" class="output small">No PDF scanned yet.</div>
+</div>
 
-  <div class="card">
-    <h2>Upload Disclosure</h2>
-    <div class="upload">
-      <strong>PDF / Scan Upload</strong>
-      <p class="small">Optional. Upload only when you want a disclosure checked.</p>
-      <input id="pdfFile" type="file" accept="application/pdf,image/*">
-    </div>
-    <button class="btn-blue" onclick="analyzeDeal()">Analyze Deal</button>
-    <button class="btn-gold" onclick="generatePlan()">Build Correction Plan</button>
-  </div>
-
-  <div class="card">
-    <h2>Results</h2>
-    <div class="scoreBox">
-      <div class="scoreDial">
-        <div id="scoreNum" class="num">--</div>
-        <div class="txt">Deal Score</div>
-      </div>
-      <div id="summaryBox" class="output">
-        Enter only the fields you want checked.
-      </div>
-    </div>
-    <div id="resultsBox" class="output" style="margin-top:12px;"></div>
-  </div>
-
-  <div id="auditSection" class="card hidden">
-    <h2>Audit Detail</h2>
-    <div id="auditBox" class="output"></div>
-  </div>
-
-  <div class="card">
-    <h2>Correction Plan</h2>
-    <div id="correctionBox" class="output">
-      Click “Build Correction Plan” after entering the fields you want corrected.
-    </div>
-  </div>
+<div class="card">
+  <h2>Correction Plan</h2>
+  <div id="correctionBox" class="output">Click “Build Correction Plan” after entering the fields you want corrected.</div>
+</div>
 
 </div>
 
-<footer>Dealer Audit V5 Elite</footer>
+<footer>Dealer Audit V6</footer>
 
 <script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
 let currentMode = "sales";
+let pdfText = "";
+let pdfPages = [];
 
-function val(id){
-  return document.getElementById(id).value.trim();
-}
-
+function val(id){ return document.getElementById(id).value.trim(); }
 function num(id){
   const raw = document.getElementById(id).value;
   return raw === "" ? null : Number(raw);
 }
-
+function clean(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g,""); }
 function money(n){
   if(n === null || n === "" || isNaN(n)) return "N/A";
   return Number(n).toLocaleString("en-US",{style:"currency",currency:"USD"});
 }
-
-function pct(n){
-  return isFinite(n) ? n.toFixed(2) + "%" : "N/A";
-}
+function pct(n){ return isFinite(n) ? n.toFixed(2) + "%" : "N/A"; }
 
 function activeFields(){
-  const fields = [
-    "customerName","cobuyerName","address","cityStateZip","dealDate","vin",
-    "sellingPrice","amountFinanced","bookValue","term","apr","payment","products"
-  ];
+  const fields = ["customerName","cobuyerName","address","cityStateZip","dealDate","vin","sellingPrice","amountFinanced","bookValue","term","apr","payment","products"];
   return fields.filter(id => val(id) !== "").length;
 }
 
@@ -395,13 +181,82 @@ function setMode(mode){
   document.getElementById("auditSection").classList.toggle("hidden", mode !== "audit");
 }
 
+async function scanPdf(){
+  const file = document.getElementById("pdfFile").files[0];
+  if(!file){
+    document.getElementById("pdfTextBox").innerHTML = `<span class="warn">No PDF selected.</span>`;
+    return;
+  }
+
+  document.getElementById("pdfTextBox").innerHTML = `<span class="blue">Scanning PDF...</span>`;
+
+  try{
+    const buffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
+
+    pdfText = "";
+    pdfPages = [];
+
+    for(let p = 1; p <= pdf.numPages; p++){
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const strings = content.items.map(item => item.str).join(" ");
+      pdfPages.push({page:p, text:strings});
+      pdfText += "\n\n--- PAGE " + p + " ---\n" + strings;
+    }
+
+    const preview = pdfText.trim().slice(0,1800);
+
+    if(clean(pdfText).length < 50){
+      document.getElementById("pdfTextBox").innerHTML =
+        `<span class="warn">PDF loaded, but almost no readable text was found. This is probably scanned/image-only and needs OCR backend.</span>`;
+    } else {
+      document.getElementById("pdfTextBox").innerHTML =
+        `<span class="good">PDF scanned successfully.</span><br><br>${escapeHtml(preview)}${pdfText.length > 1800 ? "..." : ""}`;
+    }
+
+  }catch(e){
+    document.getElementById("pdfTextBox").innerHTML =
+      `<span class="bad">PDF scan failed. Try a different PDF.</span>`;
+  }
+}
+
+function findInPdf(label, value){
+  if(!value || !pdfText) return null;
+
+  const target = clean(value);
+  const all = clean(pdfText);
+
+  if(all.includes(target)){
+    let pages = pdfPages
+      .filter(p => clean(p.text).includes(target))
+      .map(p => p.page);
+    return {found:true, pages:pages};
+  }
+
+  return {found:false, pages:[]};
+}
+
 function analyzeDeal(){
   let issues = [];
   let warnings = [];
+  let matches = [];
   let score = 10;
 
-  const name = val("customerName");
-  const date = val("dealDate");
+  const fieldsToCheck = [
+    ["Customer Name", val("customerName")],
+    ["Co-Buyer Name", val("cobuyerName")],
+    ["Address", val("address")],
+    ["City/State/ZIP", val("cityStateZip")],
+    ["Deal Date", val("dealDate")],
+    ["VIN", val("vin")],
+    ["Selling Price", val("sellingPrice")],
+    ["Amount Financed", val("amountFinanced")],
+    ["Term", val("term")],
+    ["APR", val("apr")],
+    ["Payment", val("payment")]
+  ];
+
   const vin = val("vin");
   const amount = num("amountFinanced");
   const book = num("bookValue");
@@ -410,11 +265,6 @@ function analyzeDeal(){
   const payment = num("payment");
   const file = document.getElementById("pdfFile").files[0];
 
-  if(name && name.length < 2){
-    issues.push("Customer name looks too short.");
-    score -= 1;
-  }
-
   if(vin && vin.length !== 17){
     issues.push("VIN must be exactly 17 characters.");
     score -= 1.5;
@@ -422,27 +272,13 @@ function analyzeDeal(){
 
   if(amount !== null && book !== null && book > 0){
     const ltv = amount / book * 100;
-    if(ltv > 120){
-      issues.push("LTV is extremely high: " + pct(ltv));
-      score -= 2.5;
-    } else if(ltv > 110){
-      warnings.push("LTV is high: " + pct(ltv));
-      score -= 1;
-    } else if(ltv > 100){
-      warnings.push("LTV is over 100%: " + pct(ltv));
-      score -= .5;
-    }
+    if(ltv > 120){ issues.push("LTV is extremely high: " + pct(ltv)); score -= 2.5; }
+    else if(ltv > 110){ warnings.push("LTV is high: " + pct(ltv)); score -= 1; }
+    else if(ltv > 100){ warnings.push("LTV is over 100%: " + pct(ltv)); score -= .5; }
   }
 
-  if(term !== null && term > 84){
-    warnings.push("Term is over 84 months.");
-    score -= .5;
-  }
-
-  if(apr !== null && apr > 24){
-    warnings.push("APR is unusually high.");
-    score -= .5;
-  }
+  if(term !== null && term > 84){ warnings.push("Term is over 84 months."); score -= .5; }
+  if(apr !== null && apr > 24){ warnings.push("APR is unusually high."); score -= .5; }
 
   if(amount !== null && term !== null && apr !== null && payment !== null && term > 0){
     const r = apr / 100 / 12;
@@ -453,17 +289,37 @@ function analyzeDeal(){
     }
   }
 
+  if(file && !pdfText){
+    warnings.push("PDF uploaded but not scanned yet. Tap Scan PDF first.");
+    score -= .5;
+  }
+
+  if(pdfText){
+    if(clean(pdfText).length < 50){
+      warnings.push("PDF appears image-only/scanned. OCR backend needed for full auto-detection.");
+      score -= .5;
+    } else {
+      fieldsToCheck.forEach(([label,value]) => {
+        if(value){
+          const result = findInPdf(label,value);
+          if(result && result.found){
+            matches.push(`${label} found on page(s): ${result.pages.join(", ")}`);
+          } else {
+            issues.push(`${label} not found in PDF: ${value}`);
+            score -= .7;
+          }
+        }
+      });
+    }
+  }
+
   score = Math.max(0, Math.min(10, score));
   document.getElementById("scoreNum").innerText = score.toFixed(1);
 
   let summary = "";
-  if(issues.length){
-    summary = `<span class="bad">❌ Critical review needed</span>`;
-  } else if(warnings.length){
-    summary = `<span class="warn">⚠ Review suggested</span>`;
-  } else {
-    summary = `<span class="good">✔ Clean based on provided fields</span>`;
-  }
+  if(issues.length) summary = `<span class="bad">❌ Critical review needed</span>`;
+  else if(warnings.length) summary = `<span class="warn">⚠ Review suggested</span>`;
+  else summary = `<span class="good">✔ Clean based on provided fields</span>`;
 
   document.getElementById("summaryBox").innerHTML = `
     ${summary}
@@ -475,29 +331,27 @@ function analyzeDeal(){
   `;
 
   let html = "";
-
   if(issues.length){
     html += `<div class="line"><strong class="bad">Critical</strong></div>`;
-    issues.forEach(i => html += `<div class="line">❌ ${i}</div>`);
+    issues.forEach(i => html += `<div class="line">❌ ${escapeHtml(i)}</div>`);
   }
-
   if(warnings.length){
     html += `<div class="line"><strong class="warn">Warnings</strong></div>`;
-    warnings.forEach(w => html += `<div class="line">⚠️ ${w}</div>`);
+    warnings.forEach(w => html += `<div class="line">⚠️ ${escapeHtml(w)}</div>`);
   }
-
+  if(matches.length && currentMode === "audit"){
+    html += `<div class="line"><strong class="good">PDF Matches</strong></div>`;
+    matches.forEach(m => html += `<div class="line">✔ ${escapeHtml(m)}</div>`);
+  }
   if(!issues.length && !warnings.length){
     html = `<div class="line good">✔ Nothing flagged. Blank fields were ignored.</div>`;
   }
 
   document.getElementById("resultsBox").innerHTML = html;
-
-  if(currentMode === "audit"){
-    buildAudit();
-  }
+  if(currentMode === "audit") buildAudit(matches);
 }
 
-function buildAudit(){
+function buildAudit(matches){
   const amount = num("amountFinanced");
   const book = num("bookValue");
   const ltv = amount !== null && book !== null && book > 0 ? amount / book * 100 : null;
@@ -511,23 +365,21 @@ function buildAudit(){
     <div class="line"><strong>Amount Financed:</strong> ${amount === null ? "Optional / not used" : money(amount)}</div>
     <div class="line"><strong>Book/MSRP:</strong> ${book === null ? "Optional / not used" : money(book)}</div>
     <div class="line"><strong>LTV:</strong> ${ltv === null ? "Optional / not used" : pct(ltv)}</div>
-    <div class="line"><strong>Term:</strong> ${val("term") || "Optional / not used"}</div>
-    <div class="line"><strong>APR:</strong> ${val("apr") || "Optional / not used"}</div>
-    <div class="line"><strong>Payment:</strong> ${val("payment") || "Optional / not used"}</div>
+    <div class="line"><strong>PDF Readable:</strong> ${pdfText ? "Yes" : "No / not scanned"}</div>
+    <div class="line"><strong>PDF Matches:</strong><br>${matches && matches.length ? matches.map(m => "✔ " + escapeHtml(m)).join("<br>") : "None yet"}</div>
   `;
 }
 
 function generatePlan(){
   const items = [];
-
-  if(val("customerName")) items.push("Replace customer name with: <strong>" + val("customerName") + "</strong>");
-  if(val("cobuyerName")) items.push("Verify co-buyer name: <strong>" + val("cobuyerName") + "</strong>");
-  if(val("address") || val("cityStateZip")) items.push("Replace address with: <strong>" + (val("address") + " " + val("cityStateZip")).trim() + "</strong>");
-  if(val("dealDate")) items.push("Set document dates to: <strong>" + val("dealDate") + "</strong>");
-  if(val("vin")) items.push("Verify VIN: <strong>" + val("vin") + "</strong>");
+  if(val("customerName")) items.push("Replace customer name with: <strong>" + escapeHtml(val("customerName")) + "</strong>");
+  if(val("cobuyerName")) items.push("Verify co-buyer name: <strong>" + escapeHtml(val("cobuyerName")) + "</strong>");
+  if(val("address") || val("cityStateZip")) items.push("Replace address with: <strong>" + escapeHtml((val("address") + " " + val("cityStateZip")).trim()) + "</strong>");
+  if(val("dealDate")) items.push("Set document dates to: <strong>" + escapeHtml(val("dealDate")) + "</strong>");
+  if(val("vin")) items.push("Verify VIN: <strong>" + escapeHtml(val("vin")) + "</strong>");
   if(val("amountFinanced")) items.push("Verify amount financed: <strong>" + money(num("amountFinanced")) + "</strong>");
   if(val("payment")) items.push("Verify payment: <strong>" + money(num("payment")) + "</strong>");
-  if(val("products")) items.push("Verify products/notes: <strong>" + val("products") + "</strong>");
+  if(val("products")) items.push("Verify products/notes: <strong>" + escapeHtml(val("products")) + "</strong>");
 
   if(!items.length){
     document.getElementById("correctionBox").innerHTML =
@@ -536,7 +388,14 @@ function generatePlan(){
   }
 
   document.getElementById("correctionBox").innerHTML =
-    items.map(i => `<div class="line">🛠 ${i}</div>`).join("");
+    items.map(i => `<div class="line">🛠 ${i}</div>`).join("") +
+    `<div class="line small gold">V6 can detect mismatches in readable PDFs. V7 is the correction/export engine.</div>`;
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
 }
 </script>
 
